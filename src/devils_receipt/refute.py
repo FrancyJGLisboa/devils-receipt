@@ -14,7 +14,7 @@ import re
 import sys
 from pathlib import Path
 
-from .collectors import github, gnews, hackernews, reddit_keyless
+from .collectors import github, gnews, hackernews, news_quality, reddit_keyless
 
 # Keyless, topic-agnostic sources only (symbol-mapped ones like StockTwits need
 # tickers — wrong for arbitrary beliefs).
@@ -29,6 +29,16 @@ SOURCES = {
 # quote (e.g. "fine") can't desync the pairing and swallow text after it. Length
 # is filtered by word count in ungrounded_quotes, not by the regex.
 _QUOTE_RE = re.compile(r'["“”]([^"“”]+?)["“”]')
+
+# Source-credibility tier for the memo, so it comes from data not a guess. News
+# reuses news_quality (reputable wire / unknown / junk); social + code are flat
+# labels — a Reddit post is never a "wire", and the memo should say so.
+_NEWS_TIER = {2: "wire", 1: "unknown", 0: "junk"}
+_FLAT_TIER = {"reddit": "social", "hn": "social", "github": "code"}
+
+
+def _tier(item: dict, source: str) -> str:
+    return _NEWS_TIER[news_quality.item_tier(item)] if source == "gnews" else _FLAT_TIER[source]
 
 
 def _norm(s: str) -> str:
@@ -78,6 +88,7 @@ def collect(queries: list[str], frm: str, to: str, depth: str = "default") -> li
                 continue
             for it in got:
                 it["query"], it["source"] = q, name
+                it["tier"] = _tier(it, name)
                 raw.append(it)
     return merge(raw)
 
@@ -103,7 +114,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     print(f"{len(items)} candidate(s) -> {a.out}\n")
     for it in items:
-        print(f"[{it['source']}] {it.get('date', '?')}  {it.get('title', '')}")
+        print(f"[{it['source']}/{it.get('tier', '?')}] {it.get('date', '?')}  {it.get('title', '')}")
         print(f"    {it['url']}")
         body = _norm(it.get("body", ""))
         if body:

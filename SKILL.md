@@ -1,85 +1,95 @@
 ---
 name: devils-receipt
 description: >
-  State a belief; this refuses to confirm it and hunts open sources that would
-  prove you WRONG, each shown as a receipt (url + date + exact quote). Inverts
-  the confirmation-bias search. Keyless. Use when the user says "prove me wrong",
-  "what am I missing", "stress-test this belief", "red-team this claim", "devil's
-  advocate", "find disconfirming evidence", or invokes /devils-receipt. NOT a
-  balanced summary — it is one-sided by design, toward refutation.
+  A pre-decision red-team for your own theses. State a position you hold; this
+  builds the strongest evidenced case AGAINST it, weighs it against the case
+  FOR, and gives a verdict with the triggers that would change your mind. Use
+  when the user says "red-team this", "what am I missing", "stress-test my
+  thesis", "make the bear case", "play devil's advocate", "before I commit to
+  X", or invokes /devils-receipt. The bear case is researched and cited; the
+  counterweight and verdict keep it honest. Not OSINT (no entity dossiers) —
+  decision hygiene for someone holding a position.
 ---
 
 # Devil's Receipt
 
-Edward de Bono's **Distortion** operator made operational: write the conclusion
-first, then collect only the evidence that breaks it. The point is to fight the
-#1 amateur-OSINT failure — searching until you feel right.
+A devil's advocate that brings receipts. You hold a thesis; this hunts the
+evidence that would break it, tiers the sources, weighs it against why you might
+be right, and tells you whether to hold or fold — plus the concrete triggers to
+watch. The point is to fight the #1 decision failure: researching until you feel
+right.
 
-You (Claude) do the part heuristics do badly: turn a belief into good refutation
-angles and judge which results actually threaten it. The vendored keyless
-collectors do I/O. `claimcheck` is the integrity gate.
+Use it at a *moment* — before you commit to a position, size a trade, ship a
+call. It is not a standing monitor and not entity intelligence.
 
 > Setup once: `uv pip install -e "/Users/francylisboacharuto/devils-receipt[dev]"`
-> (the `[dev]` extra pulls in `claimcheck`, the step-4 integrity gate).
+> (the `[dev]` extra pulls in `claimcheck`, the integrity gate).
 
 ## Procedure
 
-1. **Read the belief. Generate 5–8 DISCONFIRMING queries** — negations, the
-   failure/risk/downgrade/cut/delay framing, and the named entities. Search for
-   what would make the belief false, never what confirms it.
-   - "Brazil's safrinha corn is fine this year" →
-     `safrinha corn drought damage; Mato Grosso corn losses; Brazil corn crop
-     downgrade; CONAB corn cut; second corn frost risk; Brazil corn export delay`
+1. **Read the thesis. Generate queries in two sets.**
+   - **Disconfirming (the work):** 5–8 angles that would make the thesis false —
+     failure / risk / downgrade / cut / delay framing + the named entities.
+   - **Confirming (for the counterweight):** 2–3 angles that would support it.
+     You need both to weigh the case, not just stack the bear side.
+   - Thesis "Brazil's safrinha corn is fine this year" →
+     disconfirm: `safrinha corn drought damage; CONAB corn cut; Mato Grosso corn
+     losses; second corn frost risk` · confirm: `Brazil corn record harvest;
+     Brazil corn supply ample`
 
-2. **Collect** (window = last ~30 days unless the user gives one):
+2. **Collect** (window = last ~30 days unless given):
    ```
-   python -m devils_receipt --queries "q1;q2;q3;q4;q5" \
+   python -m devils_receipt --queries "q1;q2;q3;..." \
      --from YYYY-MM-DD --to YYYY-MM-DD --out evidence.json
    ```
-   Pulls candidates from Google News / Reddit / Hacker News / GitHub, dedupes,
-   writes `evidence.json`, prints ranked candidates.
+   Prints candidates tagged `[source/tier]` — tier is `wire` (reputable),
+   `unknown`, `junk`, `social` (Reddit/HN), or `code` (GitHub). **Weight by tier:
+   a `wire` beats a `social` post; never lead the bear case with a `junk` or
+   alarmist `social` item.**
 
-3. **Filter to genuine threats, write `brief.md`.** Keep only items that would
-   actually make the belief *false* — discard keyword false-positives and
-   anything that merely *supports* it (this brief is one-sided by design). For
-   each kept item cite: the exact quoted snippet copied verbatim from the
-   candidate's body (so it grounds), the url, and the date. Lead each bullet with
-   *how it threatens the belief*.
-   - **If nothing genuinely disconfirming survives**, do NOT pad. Emit exactly:
-     > **No refutation found ≠ confirmed.** Open sources in this window surfaced
-     > nothing that contradicts the belief. Absence of refutation is not evidence
-     > the belief is true — only that the open web hasn't disputed it yet.
+3. **Write the memo** (`brief.md`) in this exact shape:
+   ```
+   THESIS  <restated>
+   BEAR CASE  <none | weak | moderate | strong> — <n realized, n forward-risk>
+
+   ▸ <how it threatens the thesis>
+       <publisher> · <date> · tier: <wire|social|…> · conf: <low|med|high>
+       "<verbatim quote copied from the candidate body>"   — <url>
+   ▸ …
+
+   WOULD CHANGE MY MIND
+     • <specific, checkable trigger>           (leading indicators, not vibes)
+   COUNTERWEIGHT (why you may be right)
+     <the confirming signals you found, named>
+   VERDICT  <hold | trim | fold> — <one line>
+   ```
+   - Keep only threats that genuinely make the thesis false; drop keyword
+     false-positives. Distinguish **realized** (already happened) from
+     **forward-risk** (might) — never inflate the latter into the former.
+   - **If the bear case is empty or weak, say so** — `BEAR CASE  none/weak` with a
+     `hold` verdict is a valid, honest result. Do NOT manufacture threats to fill
+     the section. Absence of a strong bear case is real signal.
 
 4. **Verify + sign:**
    ```
    claimcheck --prose brief.md --data evidence.json \
      --window YYYY-MM-DD,YYYY-MM-DD --quotes
-   ```
-   `--quotes` is required (the brief legitimately carries source quotes). Exit 0
-   = no stale-date errors; figure warnings are advisory. Fix and re-run on error.
-   Then sign a receipt (proves brief+evidence weren't altered):
-   ```
    python -c "import json,claimcheck.receipt as r; \
      print(json.dumps(r.build_receipt('evidence.json','brief.md', \
      [{'level':'info','rule':'devils-receipt','term':'signed'}]), indent=2))" > receipt.json
    ```
+   `--quotes` required. Exit 0 = no stale-date errors; figure warnings advisory.
 
 ## Output to the user
 
-The `brief.md` content, then one line: *"N source(s) that threaten your belief;
-verified, receipt signed."* — or the honest-null statement if nothing survived.
-Never soften the belief or add reassurance. The job is the strongest available
-case against what the user believes.
+The memo verbatim. Never soften the bear case to spare feelings, and never
+inflate it to seem thorough — the value is a calibrated other-side, not a
+hatchet job. The honest verdict is the product.
 
 ## Success criteria (the loss function)
 
-Deterministic, checked by `evals/run_eval.py`:
-- **Provenance** — every ≥4-word quote in the brief appears verbatim in some
-  collected item (`refute.ungrounded_quotes` returns empty).
-- **Honest-null** — empty evidence ⇒ brief contains the no-refutation marker.
-- **Receipt integrity** — `claimcheck.verify_receipt` round-trips; tamper fails.
-- **Date sanity** — `claimcheck` reports no `date-out-of-window` errors.
-
-Judged live (semantic, needs your read of the brief):
-- **Zero-confirmation** — no surfaced item supports the belief.
-- **Relevance** — each item genuinely threatens the belief (≥70% true-threats).
+Deterministic (`evals/run_eval.py`): provenance — every ≥4-word quote appears in
+some collected item; no-fabrication — a weak/empty bear case still yields a
+verdict, never invented threats; receipt round-trips, tamper fails; dates
+in-window. Judged live: bear-case items genuinely threaten the thesis (relevance),
+and the verdict matches the evidence weight (calibration).

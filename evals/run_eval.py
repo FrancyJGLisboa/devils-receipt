@@ -17,7 +17,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from devils_receipt.refute import ungrounded_quotes  # noqa: E402
 
 FIX = Path(__file__).resolve().parent / "fixtures"
-MARKER = "No refutation found ≠ confirmed."
 WINDOW = ("2026-05-25", "2026-06-25")
 
 results: list[tuple[str, bool | None, str]] = []
@@ -31,11 +30,6 @@ def load(name: str) -> dict:
     return json.loads((FIX / name).read_text())
 
 
-def honest_null_ok(brief: str, items: list) -> bool:
-    """When no evidence survived, the brief must carry the no-refutation marker."""
-    return MARKER in brief if not items else True
-
-
 # 1. Provenance — good brief fully grounded, fabricated brief caught.
 BELIEF = "Brazil's safrinha corn is fine this year"
 ev = load("evidence_sample.json")["items"]
@@ -44,10 +38,14 @@ fab = (FIX / "brief_fabricated.md").read_text()
 record("provenance: good brief grounded", ungrounded_quotes(good, ev, ignore=BELIEF) == [])
 record("provenance: fabricated quote caught", ungrounded_quotes(fab, ev, ignore=BELIEF) != [])
 
-# 2. Honest-null — empty evidence requires the marker; missing marker rejected.
+# 2. No-fabrication — with no evidence, a memo may cite nothing; any sourced
+#    quote on empty evidence is invented. A weak bear case must still verdict.
 null_brief = (FIX / "brief_null.md").read_text()
-record("honest-null: marker present on empty evidence", honest_null_ok(null_brief, []))
-record("honest-null: missing marker rejected", honest_null_ok("nothing here", []) is False)
+record("no-fabrication: empty evidence cites nothing",
+       ungrounded_quotes(null_brief, [], ignore=BELIEF) == [])
+record("no-fabrication: invented quote on empty evidence caught",
+       ungrounded_quotes('an analyst said "a totally invented finding here"', []) != [])
+record("verdict present on empty bear case", "VERDICT" in null_brief)
 
 # 3 & 4. claimcheck integrity (date gate) + receipt round-trip.
 try:

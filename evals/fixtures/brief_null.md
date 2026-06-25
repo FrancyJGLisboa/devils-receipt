@@ -1,5 +1,12 @@
-# Devil's Receipt — "The sun rose this morning"
+THESIS  The sun rose this morning
+BEAR CASE  none — 0 realized, 0 forward-risk
 
-**No refutation found ≠ confirmed.** Open sources in this window surfaced
-nothing that contradicts the belief. Absence of refutation is not evidence the
-belief is true — only that the open web hasn't disputed it yet.
+No open source in this window contradicts the thesis. Nothing is cited because
+nothing disconfirming was found — absence of a bear case is not manufactured into
+one.
+
+WOULD CHANGE MY MIND
+  • any credible report of the thesis failing
+COUNTERWEIGHT (why you may be right)
+  uncontested
+VERDICT  hold — no evidenced case against
