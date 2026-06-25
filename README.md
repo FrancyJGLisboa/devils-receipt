@@ -32,11 +32,33 @@ one-sided: a weak or empty bear case is a valid, honest result.
 No API keys. Runtime is stdlib-only — the collectors are vendored, not imported
 from elsewhere.
 
-## Install
+## Run it on any agent surface
+
+It's an agent skill, for people who use agent skills. Two collection paths — full
+fidelity where there's a shell, model-native where there isn't.
+
+| Surface | How | Collection | Integrity |
+|---|---|---|---|
+| **Claude Code** | drop `SKILL.md` in your skills dir; `pip install` below | keyless collectors | `claimcheck` receipt |
+| **Copilot CLI** | install as a plugin skill (`SKILL.md`); same `pip install` | keyless collectors | `claimcheck` receipt |
+| **Claude.ai** | add `SKILL.md` as a Project skill / instructions | model web search | model-checked |
+| **ChatGPT** | paste `SKILL.md` body into a Custom GPT's instructions | browsing | model-checked |
+
+Shell surfaces (Claude Code, Copilot CLI) — install from the public repo, no
+local checkout needed:
 
 ```bash
-uv pip install -e .            # runtime (stdlib-only, keyless)
-uv pip install -e ".[dev]"     # + tests + claimcheck (integrity gate, from GitHub)
+pip install "devils-receipt[dev] @ git+https://github.com/FrancyJGLisboa/devils-receipt.git"
+```
+
+Chat surfaces (Claude.ai, ChatGPT) run Path B in `SKILL.md` — the model collects
+with its own web search and labels the result *model-checked, not receipt-verified*.
+
+## Develop
+
+```bash
+git clone https://github.com/FrancyJGLisboa/devils-receipt && cd devils-receipt
+uv pip install -e ".[dev]"     # runtime + tests + claimcheck (integrity gate)
 ```
 
 ## Use
