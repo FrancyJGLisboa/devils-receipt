@@ -1,0 +1,27 @@
+{
+  "window": ["2026-05-25", "2026-06-25"],
+  "items": [
+    {
+      "id": "gn_1",
+      "source": "gnews",
+      "title": "CONAB cuts Brazil corn output forecast amid Mato Grosso drought",
+      "url": "https://example.com/conab-corn-cut",
+      "author": "Reuters",
+      "body": "CONAB cut its Brazil corn output forecast as a prolonged dry spell scorched safrinha fields across Mato Grosso, with analysts warning of further downgrades.",
+      "date": "2026-06-10",
+      "engagement": {},
+      "relevance": 0.81
+    },
+    {
+      "id": "rd_1",
+      "source": "reddit",
+      "title": "Frost hit second corn in Parana over the weekend",
+      "url": "https://example.com/parana-frost",
+      "author": "u/agtrader",
+      "body": "Producers in Parana report frost damage to late-planted safrinha corn, with some fields a total loss after temperatures dropped below zero.",
+      "date": "2026-06-15",
+      "engagement": {"score": 142, "comments": 38},
+      "relevance": 0.74
+    }
+  ]
+}

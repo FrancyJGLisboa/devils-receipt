@@ -1,0 +1,48 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "devils-receipt"
+version = "0.1.0"
+description = "Disconfirming-evidence OSINT: state a belief, get only the open-source evidence that would prove it wrong — each with a verifiable receipt."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [{ name = "Francy Lisboa Charuto", email = "agrolisboa@gmail.com" }]
+keywords = ["osint", "confirmation-bias", "red-team", "verification", "grounding", "keyless"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Software Development :: Quality Assurance",
+]
+# Runtime is stdlib-only (collectors are vendored). claimcheck is the optional
+# integrity gate, installed from its own repo — see README.
+dependencies = []
+
+[project.scripts]
+devils-receipt = "devils_receipt.__main__:main"
+
+# Runtime install stays stdlib-only (collectors vendored). claimcheck is the
+# integrity gate — pulled from its own public repo for dev/eval only.
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "ruff>=0.5",
+    "claimcheck @ git+https://github.com/FrancyJGLisboa/claimcheck.git",
+]
+
+[tool.hatch.metadata]
+allow-direct-references = true  # claimcheck dev dep is a git URL
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/devils_receipt"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
