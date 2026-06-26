@@ -97,13 +97,19 @@ receipts here, point a hosted collector endpoint at the chat tool — optional.)
      `hold` verdict is a valid, honest result. Do NOT manufacture threats. Absence
      of a strong bear case is real signal.
 
-4. **Verify (Path A only).**
+4. **Verify (Path A only).** Two gates, both must pass:
    ```
+   # a) provenance — every quote is real (exits 1 on any unsourced quote)
+   python -m devils_receipt.verify --prose brief.md --data evidence.json --thesis "<thesis>"
+   # b) no invented figures/dates, no tampering — claimcheck + signed receipt
    claimcheck --prose brief.md --data evidence.json --window FROM,TO --quotes
    python -c "import json,claimcheck.receipt as r; print(json.dumps(r.build_receipt(
      'evidence.json','brief.md',[{'level':'info','rule':'devils-receipt','term':'signed'}])))" > receipt.json
    ```
-   Exit 0 = no stale-date errors; figure warnings advisory.
+   (a) FAIL → a quote isn't in any source; fix the memo. (b) exit 0 = no
+   stale-date errors; figure warnings advisory. On Path B (no shell) there is no
+   `verify`/`claimcheck` — you must quote verbatim with a live link and label the
+   memo *model-checked, not receipt-verified*.
 
 ## Worked example
 
