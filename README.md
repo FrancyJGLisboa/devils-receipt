@@ -18,8 +18,13 @@ one-sided: a weak or empty bear case is a valid, honest result.
 
 ## How it works
 
-1. A thesis becomes two query sets — **disconfirming** (the work) and a few
-   **confirming** (for the counterweight).
+0. A **scope gate** decides if the thesis is red-teamable at all. It declines what
+   isn't publicly checkable (personal, unfalsifiable, medical/legal advice, claims
+   about private individuals) and gives politically contested claims an
+   evidence-only summary — no verdict. A confident memo on the wrong question is
+   worse than a refusal.
+1. An in-scope thesis becomes two query sets — **disconfirming** (the work) and a
+   few **confirming** (for the counterweight).
 2. `devils-receipt` runs them through vendored **keyless** collectors (Google
    News, Reddit, Hacker News, GitHub), dedupes, tags each by source tier
    (`wire` / `unknown` / `junk` / `social` / `code`), and writes `evidence.json`.

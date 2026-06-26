@@ -8,7 +8,9 @@ description: >
   missing", "stress-test my thesis", "make the bear case", "play devil's
   advocate", "before I commit to X", or invokes /devils-receipt. Works best on
   market / macro / domain theses where public reporting is the right source. Not
-  OSINT (no entity dossiers) — decision hygiene for someone holding a view.
+  OSINT (no entity dossiers) — decision hygiene for someone holding a view. A
+  scope gate (step 0) declines theses that aren't publicly checkable (personal,
+  unfalsifiable, medical/legal advice, claims about private individuals).
 ---
 
 # Devil's Receipt
@@ -37,6 +39,23 @@ verbatim with a working link, and you must not invent figures. (For full
 receipts here, point a hosted collector endpoint at the chat tool — optional.)
 
 ## Procedure
+
+0. **Scope gate — decide if this is red-teamable BEFORE collecting.** A confident
+   memo on the wrong kind of thesis is worse than a refusal.
+   - ✅ **Proceed:** empirical, publicly reported, falsifiable, names entities +
+     a timeframe (markets, macro, companies, industries, policy, geopolitics).
+   - ⚠️ **Degrade + warn:** vague, far-future, or thin public coverage → proceed
+     but cap confidence, expect `BEAR CASE none/weak`, and say the coverage is thin.
+   - ⛔ **Decline — say why, do NOT fabricate a memo:**
+       · private/personal, no public sources ("should I take this job", "my …")
+       · unfalsifiable/subjective (taste, "is my idea good", "am I a good X")
+       · medical / legal / financial *advice* framed as a thesis → point to a
+         professional; don't adjudicate
+       · adversarial claims about a **named private individual** (defamation risk)
+   - ⚖️ **Politically / socially contested "facts":** allow, but produce an
+     **evidence summary, not a ruling** — show disconfirming and confirming
+     sources with tiers and dates, and **omit the VERDICT line**. You surface the
+     evidence; you do not declare the claim true or false.
 
 1. **Read the thesis. Generate queries in two sets.**
    - **Disconfirming (the work):** 5–8 angles that would make the thesis false —
@@ -118,5 +137,7 @@ product.
 Deterministic on Path A (`evals/run_eval.py`): provenance — every ≥4-word quote
 appears in some collected item; no-fabrication — a weak/empty bear case still
 verdicts, never invents threats; receipt round-trips, tamper fails; dates
-in-window. Judged live (both paths): bear-case items genuinely threaten the
-thesis, and the verdict matches the evidence weight.
+in-window. Judged live (both paths): the scope gate declines un-checkable theses
+(no fabricated memo) and gives contested claims an evidence-only summary (no
+verdict); bear-case items genuinely threaten the thesis; the verdict matches the
+evidence weight.
